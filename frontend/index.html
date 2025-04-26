@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AITechie Backend Hello</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #4a00e0, #8e2de2);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 40px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+    }
+
+    h1 {
+      font-size: 2em;
+      margin-bottom: 20px;
+    }
+
+    button {
+      background: #fff;
+      color: #4a00e0;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #e2e2e2;
+    }
+
+    #response {
+      margin-top: 20px;
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #ffd;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Welcome to AITechie</h1>
+    <button onclick="callBackend()">Say Hello 👋</button>
+    <div id="response"></div>
+  </div>
+
+  <script>
+    async function callBackend() {
+      try {
+        const res = await fetch("http://localhost:8088/api/hello"); // Use localhost here
+        if (!res.ok) throw new Error("Network error");
+        const text = await res.text();
+        document.getElementById("response").textContent = text;
+      } catch (error) {
+        document.getElementById("response").textContent = "Error: " + error.message;
+      }
+    }
+  </script>
+  
+</body>
+</html>
