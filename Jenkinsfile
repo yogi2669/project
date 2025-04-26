@@ -35,7 +35,7 @@ pipeline {
         stage('Publish Artifact to Nexus') {
             steps {
                 // Push the artifact to Nexus
-                withCredentials([usernamePassword(credentialsId: 'maven-creds', usernameVariable: 'NEXUS_USERNAME', passwordVariable: 'NEXUS_PASSWORD')]) {
+                withCredentials([usernamePassword(credentialsId: 'maven-cred', usernameVariable: 'NEXUS_USERNAME', passwordVariable: 'NEXUS_PASSWORD')]) {
                     script {
                         // Use Maven deploy command to push the JAR file to Nexus
                         sh """
