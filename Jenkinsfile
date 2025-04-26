@@ -2,49 +2,90 @@ pipeline {
     agent any
 
     environment {
-        BACKEND_IMAGE = 'your-nexus-repo/backend:latest'
-        FRONTEND_IMAGE = 'your-nexus-repo/frontend:latest'
-        DOCKER_CREDENTIAL_ID = 'your-docker-credentials-id' // set this in Jenkins credentials
+        // Define environment variables for Nexus credentials and repository details
+        NEXUS_URL = 'http://13.233.88.239:8081'  // Nexus URL
+        NEXUS_REPO = 'my-maven-releases'         // Nexus repository name
+        ARTIFACT_PATH = 'target/myapp.jar'       // Path to the artifact in your project
+        GITHUB_REPO = 'https://github.com/JaiBhargav/project'  // GitHub repo URL
+        BRANCH = 'master'                       // GitHub branch to build
+        DEPLOYMENT_FILE_PATH = 'deployment.yaml'  // Path to your deployment.yaml file
     }
 
     stages {
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/yourusername/ci-cd-project.git'
+                // Checkout the code from GitHub
+                git url: GITHUB_REPO, branch: BRANCH
             }
         }
 
-        stage('Build Backend') {
+        stage('Build') {
             steps {
-                sh 'cd backend && mvn clean package'
-            }
-        }
-
-        stage('Build Docker Images') {
-            steps {
+                // Run Maven to build the application
                 script {
-                    docker.build("${BACKEND_IMAGE}", "backend/")
-                    docker.build("${FRONTEND_IMAGE}", "frontend/")
+                    sh 'mvn clean install -DskipTests'
                 }
             }
         }
 
-        stage('Push Images to Nexus') {
+        stage('Publish Artifact to Nexus') {
             steps {
-                script {
-                    docker.withRegistry('http://your-nexus-url:8082', "${DOCKER_CREDENTIAL_ID}") {
-                        docker.image("${BACKEND_IMAGE}").push()
-                        docker.image("${FRONTEND_IMAGE}").push()
+                // Push the artifact to Nexus
+                withCredentials([usernamePassword(credentialsId: 'maven-creds', usernameVariable: 'NEXUS_USERNAME', passwordVariable: 'NEXUS_PASSWORD')]) {
+                    script {
+                        // Use Maven deploy command to push the JAR file to Nexus
+                        sh """
+                            mvn deploy:deploy-file \
+                            -Dfile=${ARTIFACT_PATH} \
+                            -DrepositoryId=nexus-releases \
+                            -Durl=${NEXUS_URL}/repository/${NEXUS_REPO}/ \
+                            -DgroupId=com.example \
+                            -DartifactId=backend-app \
+                            -Dversion=1.0.0 \
+                            -Dpackaging=jar \
+                            -Dusername=$NEXUS_USERNAME \
+                            -Dpassword=$NEXUS_PASSWORD
+                        """
                     }
                 }
             }
         }
 
-        stage('Update Kubernetes Manifests') {
+        stage('Update Deployment YAML') {
             steps {
-                // We'll generate YAMLs later
-                echo 'Updating deployment YAML files...'
+                // Update deployment.yaml (e.g., you can replace the version or image name dynamically)
+                script {
+                    def version = "1.0.0"  // Specify the version or fetch from the artifact
+                    def imageName = "bhargavjupalli/backend-app:${version}"
+                    sh """
+                        sed -i 's|image:.*|image: ${imageName}|' ${DEPLOYMENT_FILE_PATH}
+                    """
+                }
             }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                // Deploy to Kubernetes (assuming ArgoCD is watching the deployment file)
+                script {
+                    // Update the Kubernetes cluster with the modified deployment.yaml file
+                    kubernetesDeploy(
+                        kubeconfigId: 'my-kubeconfig',
+                        configs: "${DEPLOYMENT_FILE_PATH}",
+                        enableConfigSubstitution: true
+                    )
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Pipeline completed successfully!"
+        }
+
+        failure {
+            echo "Pipeline failed. Please check the logs for errors."
         }
     }
 }
