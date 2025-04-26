@@ -9,6 +9,7 @@ pipeline {
         GITHUB_REPO = 'https://github.com/JaiBhargav/project'  // GitHub repo URL
         BRANCH = 'master'                       // GitHub branch to build
         DEPLOYMENT_FILE_PATH = 'deployment.yaml'  // Path to your deployment.yaml file
+        BACKEND_DIR = 'backend'  // Directory where the backend application exists
     }
 
     stages {
@@ -21,9 +22,12 @@ pipeline {
 
         stage('Build') {
             steps {
-                // Run Maven to build the application
-                script {
-                    sh 'mvn clean install -DskipTests'
+                // Change to the 'backend' directory and run Maven to build the application
+                dir("${BACKEND_DIR}") {
+                    // Run Maven to build the application
+                    script {
+                        sh 'mvn clean install -DskipTests'
+                    }
                 }
             }
         }
