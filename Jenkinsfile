@@ -8,7 +8,7 @@ pipeline {
         ARTIFACT_PATH = 'target/myapp.jar'       // Path to the artifact in your project
         GITHUB_REPO = 'https://github.com/JaiBhargav/project'  // GitHub repo URL
         BRANCH = 'master'                       // GitHub branch to build
-        DEPLOYMENT_FILE_PATH = 'deployment.yaml'  // Path to your deployment.yaml file
+        DEPLOYMENT_FILE_PATH = 'deployment.yml'  // Path to your deployment.yaml file
         BACKEND_DIR = 'backend'  // Directory where the backend application exists
     }
 
@@ -32,24 +32,24 @@ pipeline {
             }
         }
 
-        stage('Publish Artifact to Nexus') {
+        stage('Upload Artifact to Nexus') {
             steps {
-                // Push the artifact to Nexus
-                withCredentials([usernamePassword(credentialsId: 'maven-cred', usernameVariable: 'NEXUS_USERNAME', passwordVariable: 'NEXUS_PASSWORD')]) {
-                    script {
-                        // Use Maven deploy command to push the JAR file to Nexus
-                        sh """
-                            mvn deploy:deploy-file \
-                            -Dfile=${ARTIFACT_PATH} \
-                            -DrepositoryId=nexus-releases \
-                            -Durl=${NEXUS_URL}/repository/${NEXUS_REPO}/ \
-                            -DgroupId=com.example \
-                            -DartifactId=backend-app \
-                            -Dversion=1.0.0 \
-                            -Dpackaging=jar \
-                            -Dusername=$NEXUS_USERNAME \
-                            -Dpassword=$NEXUS_PASSWORD
-                        """
+                dir('backend') {    // again inside backend
+                    withCredentials([usernamePassword(credentialsId: "${maven-cred}", usernameVariable: 'NEXUS_USER', passwordVariable: 'NEXUS_PASS')]) {
+                        sh '''
+                        mvn deploy:deploy-file \
+                          -DgroupId=com.aitechie \
+                          -DartifactId=backend \
+                          -Dversion=0.0.1-SNAPSHOT \
+                          -Dpackaging=jar \
+                          -Dfile=target/myapp.jar \
+                          -DrepositoryId=nexus \
+                          -Durl=$NEXUS_URL \
+                          -DgeneratePom=true \
+                          -DrepositoryLayout=default \
+                          -Dusername=$NEXUS_USER \
+                          -Dpassword=$NEXUS_PASS
+                        '''
                     }
                 }
             }
