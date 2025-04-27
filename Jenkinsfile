@@ -12,7 +12,7 @@ pipeline {
         BACKEND_DIR = 'backend'                  // Backend code directory
         VERSION = '1.0.0'                        // Application version
         DOCKER_IMAGE_NAME = 'backend-app'        // Docker image name
-        DOCKER_REGISTRY = '13.127.197.254:9092'  // Nexus Docker registry URL
+        DOCKER_REGISTRY = '13.127.197.254:9091'  // Nexus Docker registry URL
     }
 
     stages {
