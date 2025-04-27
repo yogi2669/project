@@ -4,9 +4,9 @@ metadata:
   name: backend-app
   labels:
     app: backend-app
-  namespace: default  # You can change 'default' to your desired namespace
+  namespace: default  # Ensure the namespace is set
 spec:
-  replicas: 1
+  replicas: 1  # You can adjust the number of replicas as needed
   selector:
     matchLabels:
       app: backend-app
@@ -19,33 +19,32 @@ spec:
         - name: backend-container
           image: bhargavjupalli/backend-app:1.0.0
           ports:
-            - containerPort: 3333  # Container port where your app is running
+            - containerPort: 8088  # Updated to match the port Spring Boot app is using
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: backend-service
-  namespace: default  # Ensure this matches the namespace in the deployment
+  namespace: default  # Ensure the namespace is set
 spec:
   selector:
     app: backend-app
   ports:
     - protocol: TCP
-      port: 9092  # Port exposed to the outside world
-      targetPort: 3333 # Port inside the container
-      nodePort: 30175 
-  type: NodePort  # Exposes the service externally
+      port: 9092        # The exposed port on the service (can be different from the container port)
+      targetPort: 8088   # The port your Spring Boot app is listening on
+  type: LoadBalancer  # Expose the service externally
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: backend-ingress
-  namespace: default  # Ensure this matches the namespace
+  namespace: default  # Ensure the namespace is set
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-    - host: ec2-13-127-197-254.ap-south-1.compute.amazonaws.com  # Replace with your actual EC2 public DNS
+    - host: ec2-13-127-197-254.ap-south-1.compute.amazonaws.com  # Your public EC2 IP or DNS name
       http:
         paths:
           - path: /
@@ -54,4 +53,4 @@ spec:
               service:
                 name: backend-service
                 port:
-                  number: 9092  # Match the port exposed by the service
+                  number: 9092  # Match the port used in the service and deployment
