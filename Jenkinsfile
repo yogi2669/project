@@ -2,13 +2,13 @@ pipeline {
     agent any
 
     environment {
-        NEXUS_URL = 'http://13.127.197.254:8081'    // Nexus URL
-        NEXUS_REPO = 'my-maven-releases'           // Nexus repository name
+        NEXUS_URL = 'http://13.233.88.239:8081' // Nexus URL
+        NEXUS_REPO = 'my-maven-releases'         // Nexus repository name
         ARTIFACT_PATH = 'target/backend-0.0.1-SNAPSHOT.jar' // Path to the artifact
-        GITHUB_REPO = 'https://github.com/JaiBhargav/project'  // GitHub repo URL
-        BRANCH = 'master'                          // GitHub branch
-        DEPLOYMENT_FILE_PATH = 'deployment.yaml'   // Kubernetes deployment file
-        BACKEND_DIR = 'backend'                    // Backend project directory
+        GITHUB_REPO = 'https://github.com/JaiBhargav/project' // GitHub repo
+        BRANCH = 'master'                        // GitHub branch
+        DEPLOYMENT_FILE_PATH = 'deployment.yaml' // Kubernetes deployment YAML
+        BACKEND_DIR = 'backend'                  // Backend code directory
     }
 
     stages {
@@ -26,36 +26,39 @@ pipeline {
             }
         }
 
+        stage('Create Maven Settings.xml') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'maven-cred', usernameVariable: 'NEXUS_USERNAME', passwordVariable: 'NEXUS_PASSWORD')]) {
+                    sh """
+                        cat > ~/.m2/settings.xml <<EOF
+<settings>
+  <servers>
+    <server>
+      <id>nexus-releases</id>
+      <username>\${NEXUS_USERNAME}</username>
+      <password>\${NEXUS_PASSWORD}</password>
+    </server>
+  </servers>
+</settings>
+EOF
+                    """
+                }
+            }
+        }
+
         stage('Publish Artifact to Nexus') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'maven-cred',usernameVariable: 'NEXUS_USERNAME', passwordVariable: 'NEXUS_PASSWORD')]) {
-                    script {
-                        // Create Maven settings.xml dynamically
-                        sh """
-                            cat <<EOF > ~/.m2/settings.xml
-                            <settings>
-                            <servers>
-                                <server>
-                                    <id>nexus-releases</id>
-                                    <username>\${NEXUS_USERNAME}</username>
-                                    <password>\${NEXUS_PASSWORD}</password>
-                                </server>
-                            </servers>
-                            </settings>
-                            EOF"""
-
-                        // Now deploy the artifact to Nexus
-                        sh """
-                            mvn deploy:deploy-file \
-                            -Dfile=${ARTIFACT_PATH} \
-                            -DrepositoryId=nexus-releases \
-                            -Durl=${NEXUS_URL}/repository/${NEXUS_REPO}/ \
-                            -DgroupId=com.example \
-                            -DartifactId=backend-app \
-                            -Dversion=1.0.0 \
-                            -Dpackaging=jar
-                        """
-                    }
+                dir("${BACKEND_DIR}") {
+                    sh """
+                        mvn deploy:deploy-file \
+                        -Dfile=${ARTIFACT_PATH} \
+                        -DrepositoryId=nexus-releases \
+                        -Durl=${NEXUS_URL}/repository/${NEXUS_REPO}/ \
+                        -DgroupId=com.example \
+                        -DartifactId=backend-app \
+                        -Dversion=1.0.0 \
+                        -Dpackaging=jar
+                    """
                 }
             }
         }
@@ -87,11 +90,10 @@ pipeline {
 
     post {
         success {
-            echo "Pipeline completed successfully!"
+            echo "✅ Pipeline completed successfully!"
         }
-
         failure {
-            echo "Pipeline failed. Please check the logs for errors."
+            echo "❌ Pipeline failed. Please check logs."
         }
     }
 }
