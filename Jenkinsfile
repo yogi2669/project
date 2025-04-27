@@ -73,7 +73,8 @@ pipeline {
                     def timestamp = new Date().format("yyyyMMddHHmmss")
                     def imageTag = "${DOCKER_IMAGE_NAME}:${timestamp}"
                     sh """
-                        docker build -t ${DOCKER_HUB_USER}/${imageTag} .
+                        docker build -t bhargavjupalli/backend-app:20250427135149 -f backend/Dockerfile .
+
                     """
                 }
             }
