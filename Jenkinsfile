@@ -28,7 +28,7 @@ pipeline {
 
         stage('Publish Artifact to Nexus') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'maven-cred', usernameVariable: 'deploy-user', passwordVariable: 'admin@123')]) {
+                withCredentials([usernamePassword(credentialsId: 'maven-cred',usernameVariable: 'NEXUS_USERNAME', passwordVariable: 'NEXUS_PASSWORD')]) {
                     script {
                         // Create Maven settings.xml dynamically
                         sh """
@@ -37,8 +37,8 @@ pipeline {
                             <servers>
                                 <server>
                                 <id>nexus-releases</id>
-                                <username>${NEXUS_USERNAME}</username>
-                                <password>${NEXUS_PASSWORD}</password>
+                                <username>deploy-user</username>
+                                <password>admin@123</password>
                                 </server>
                             </servers>
                             </settings>
