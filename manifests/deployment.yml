@@ -32,8 +32,9 @@ spec:
   ports:
     - protocol: TCP
       port: 9092  # Port exposed to the outside world
-      targetPort: 3333  # Port inside the container
-  type: LoadBalancer  # Exposes the service externally
+      targetPort: 3333 # Port inside the container
+      nodePort: 30175 
+  type: NodePort  # Exposes the service externally
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
