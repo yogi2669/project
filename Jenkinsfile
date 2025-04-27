@@ -11,6 +11,7 @@ pipeline {
         BACKEND_DIR = 'backend'
         DOCKER_IMAGE_NAME = 'backend-app'
         DOCKER_HUB_USER = 'bhargavjupalli'
+        VERSION= "1.0.0"
         TIMESTAMP = new Date().format("yyyyMMddHHmmss")
         IMAGE_TAG = "bhargavjupalli/backend-app:${TIMESTAMP}"
     }
