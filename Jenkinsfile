@@ -7,7 +7,7 @@ pipeline {
         ARTIFACT_PATH = 'target/backend-0.0.1-SNAPSHOT.jar' // Path to the artifact
         GITHUB_REPO = 'https://github.com/JaiBhargav/project' // GitHub repo
         BRANCH = 'master'                        // GitHub branch
-        DEPLOYMENT_FILE_PATH = 'deployment.yaml' // Kubernetes deployment YAML
+        DEPLOYMENT_FILE_PATH = 'manifests/deployment.yml' // Kubernetes deployment YAML
         BACKEND_DIR = 'backend'                  // Backend code directory
     }
 
