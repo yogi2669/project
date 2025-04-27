@@ -4,9 +4,9 @@ metadata:
   name: backend-app
   labels:
     app: backend-app
-  namespace: default  # Add the namespace field (you can change 'default' to a custom namespace if needed)
+  namespace: default  # You can change 'default' to your desired namespace
 spec:
-  replicas: 1  # You can adjust the number of replicas as needed
+  replicas: 1
   selector:
     matchLabels:
       app: backend-app
@@ -19,32 +19,32 @@ spec:
         - name: backend-container
           image: bhargavjupalli/backend-app:1.0.0
           ports:
-            - containerPort: 3333  # Updated port to 9091
+            - containerPort: 3333  # Container port where your app is running
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: backend-service
-  namespace: default  # Add the namespace field
+  namespace: default  # Ensure this matches the namespace in the deployment
 spec:
   selector:
     app: backend-app
   ports:
     - protocol: TCP
-      port: 9092       # Updated port to 9091
-      targetPort: 3333   # Ensure it matches the containerPort defined above
-  type: LoadBalancer 
+      port: 9092  # Port exposed to the outside world
+      targetPort: 3333  # Port inside the container
+  type: LoadBalancer  # Exposes the service externally
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: backend-ingress
-  namespace: default  # Add the namespace field
+  namespace: default  # Ensure this matches the namespace
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-    - host: ec2-13-127-197-254.ap-south-1.compute.amazonaws.com # Replace with your actual EC2 IP or domain
+    - host: ec2-13-127-197-254.ap-south-1.compute.amazonaws.com  # Replace with your actual EC2 public DNS
       http:
         paths:
           - path: /
@@ -53,4 +53,4 @@ spec:
               service:
                 name: backend-service
                 port:
-                  number: 3333  # Match the port used in the service and deployment
+                  number: 9092  # Match the port exposed by the service
