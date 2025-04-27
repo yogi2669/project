@@ -37,8 +37,8 @@ pipeline {
                             <servers>
                                 <server>
                                 <id>nexus-releases</id>
-                                <username>deploy-user</username>
-                                <password>admin@123</password>
+                               <username>\${NEXUS_USERNAME}</username>
+                               <password>\${NEXUS_PASSWORD}</password>
                                 </server>
                             </servers>
                             </settings>
