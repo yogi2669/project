@@ -2,9 +2,8 @@ pipeline {
     agent any
 
     environment {
-        NEXUS_URL = 'http://13.127.197.254:8081' // Nexus URL
+        NEXUS_URL = 'http://13.127.197.254:8081' // Nexus URL (still there for Maven JAR push)
         NEXUS_REPO_JAR = 'my-maven-releases'     // Nexus repository for JAR artifacts
-        NEXUS_REPO_DOCKER = 'docker-images'      // Nexus Docker repository
         ARTIFACT_PATH = 'target/backend-0.0.1-SNAPSHOT.jar' // Path to the artifact
         GITHUB_REPO = 'https://github.com/JaiBhargav/project' // GitHub repo
         BRANCH = 'master'                        // GitHub branch
@@ -12,7 +11,7 @@ pipeline {
         BACKEND_DIR = 'backend'                  // Backend code directory
         VERSION = '1.0.0'                        // Application version
         DOCKER_IMAGE_NAME = 'backend-app'        // Docker image name
-        DOCKER_REGISTRY = '13.127.197.254:9091'  // Nexus Docker registry URL
+        DOCKER_HUB_USER = 'bhargavjupalli' // 🔥 New: DockerHub username (replace this)
     }
 
     stages {
@@ -73,30 +72,30 @@ pipeline {
                 dir("${BACKEND_DIR}") {
                     script {
                         sh """
-                            docker build -t ${DOCKER_REGISTRY}/${NEXUS_REPO_DOCKER}/${DOCKER_IMAGE_NAME}:${VERSION} .
+                            docker build -t ${DOCKER_HUB_USER}/${DOCKER_IMAGE_NAME}:${VERSION} .
                         """
                     }
                 }
             }
         }
 
-        stage('Login to Nexus Docker Registry') {
+        stage('Login to Docker Hub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'maven-cred', usernameVariable: 'NEXUS_USERNAME', passwordVariable: 'NEXUS_PASSWORD')]) {
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-cred', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                     script {
                         sh """
-                            docker login ${DOCKER_REGISTRY} -u ${NEXUS_USERNAME} -p ${NEXUS_PASSWORD}
+                            echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
                         """
                     }
                 }
             }
         }
 
-        stage('Push Docker Image to Nexus') {
+        stage('Push Docker Image to Docker Hub') {
             steps {
                 script {
                     sh """
-                        docker push ${DOCKER_REGISTRY}/${NEXUS_REPO_DOCKER}/${DOCKER_IMAGE_NAME}:${VERSION}
+                        docker push ${DOCKER_HUB_USER}/${DOCKER_IMAGE_NAME}:${VERSION}
                     """
                 }
             }
@@ -105,7 +104,7 @@ pipeline {
         stage('Update Deployment YAML') {
             steps {
                 script {
-                    def imageName = "${DOCKER_REGISTRY}/${NEXUS_REPO_DOCKER}/${DOCKER_IMAGE_NAME}:${VERSION}"
+                    def imageName = "${DOCKER_HUB_USER}/${DOCKER_IMAGE_NAME}:${VERSION}"
                     sh """
                         sed -i 's|image:.*|image: ${imageName}|' ${DEPLOYMENT_FILE_PATH}
                     """
