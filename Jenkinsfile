@@ -108,7 +108,7 @@ pipeline {
                 script {
 
                     sh """
-                        sed -i 's|image:.*|image: ${IMAGE_TAG}|' ${DEPLOYMENT_FILE_PATH}
+                         sed -i 's|\\(image: \\).*|\\1${IMAGE_TAG}|' ${DEPLOYMENT_FILE_PATH}
                     """
                 }
             }
