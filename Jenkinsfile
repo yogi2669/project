@@ -11,7 +11,8 @@ pipeline {
         BACKEND_DIR = 'backend'
         DOCKER_IMAGE_NAME = 'backend-app'
         DOCKER_HUB_USER = 'bhargavjupalli'
-        VERSION = new Date().format("yyyyMMddHHmmss")
+        TIMESTAMP = new Date().format("yyyyMMddHHmmss")
+        IMAGE_TAG = "bhargavjupalli/backend-app:${TIMESTAMP}"
     }
 
     stages {
@@ -72,7 +73,7 @@ pipeline {
                 dir("${BACKEND_DIR}") {
                     script {
                         sh """
-                            docker build -t ${DOCKER_HUB_USER}/${DOCKER_IMAGE_NAME}:${VERSION} .
+                            docker build -t ${DOCKER_HUB_USER}/${DOCKER_IMAGE_NAME}/${IMAGE_TAG} .
                         """
                     }
                 }
@@ -94,10 +95,8 @@ pipeline {
         stage('Push Docker Image to Docker Hub') {
             steps {
                 script {
-                    def timestamp = new Date().format("yyyyMMddHHmmss")
-                    def imageTag = "${DOCKER_IMAGE_NAME}:${timestamp}"
                     sh """
-                        docker push ${DOCKER_HUB_USER}/${imageTag}
+                        docker push ${DOCKER_HUB_USER}/${IMAGE_TAG}
                     """
                 }
             }
