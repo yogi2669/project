@@ -74,7 +74,7 @@ pipeline {
                 dir("${BACKEND_DIR}") {
                     script {
                         sh """
-                            docker build -t ${DOCKER_HUB_USER}/${DOCKER_IMAGE_NAME}/${IMAGE_TAG} .
+                            docker build -t ${IMAGE_TAG} .
                         """
                     }
                 }
