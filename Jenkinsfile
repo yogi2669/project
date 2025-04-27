@@ -105,10 +105,9 @@ pipeline {
         stage('Update Deployment YAML') {
             steps {
                 script {
-                    def timestamp = new Date().format("yyyyMMddHHmmss")
-                    def imageTag = "${DOCKER_HUB_USER}/${DOCKER_IMAGE_NAME}:${timestamp}"
+
                     sh """
-                        sed -i 's|image:.*|image: ${imageTag}|' ${DEPLOYMENT_FILE_PATH}
+                        sed -i 's|image:.*|image: ${IMAGE_TAG}|' ${DEPLOYMENT_FILE_PATH}
                     """
                 }
             }
@@ -121,7 +120,7 @@ pipeline {
                         git config user.name "${GIT_USERNAME}"
                         git config user.email "${GIT_USERNAME}@example.com"
                         git add ${DEPLOYMENT_FILE_PATH}
-                        git commit -m "Update deployment image to ${imageTag}" || echo "No changes to commit"
+                        git commit -m "Update deployment image to ${IMAGE_TAG}" || echo "No changes to commit"
                         git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/JaiBhargav/project.git HEAD:${BRANCH}
                     """
                 }
