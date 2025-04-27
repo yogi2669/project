@@ -71,7 +71,7 @@
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>
                     <groupId>com.aitechie</groupId>
                     <artifactId>backend</artifactId>
-                    <version>0.0.1-SNAPSHOT</version>
+                    <version>0.0.1</version>
                     <packaging>jar</packaging>
                 </configuration>
             </plugin>
