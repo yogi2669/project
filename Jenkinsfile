@@ -97,7 +97,7 @@ pipeline {
             steps {
                 script {
                     sh """
-                        docker push ${DOCKER_HUB_USER}/${IMAGE_TAG}
+                        docker push ${IMAGE_TAG}
                     """
                 }
             }
