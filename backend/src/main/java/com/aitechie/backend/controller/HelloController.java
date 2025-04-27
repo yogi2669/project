@@ -11,7 +11,7 @@ public class HelloController {
     @CrossOrigin(origins = "http://127.0.0.1:3333")  // Allow frontend at this origin
     @GetMapping("/api/hello")
     public String hello() {
-        return "Hello from Backend!";
+        return "Hello Bhargav this message from Backend!";
     }
 }
 
