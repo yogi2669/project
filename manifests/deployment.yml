@@ -18,7 +18,7 @@ spec:
         - name: backend-container
           image: bhargavjupalli/backend-app:1.0.0
           ports:
-            - containerPort: 9091   # Updated port to 9091
+            - containerPort: 3333  # Updated port to 9091
 ---
 apiVersion: v1
 kind: Service
@@ -30,7 +30,7 @@ spec:
   ports:
     - protocol: TCP
       port: 9091        # Updated port to 9091
-      targetPort: 9091   # Ensure it matches the containerPort defined above
+      targetPort: 3333   # Ensure it matches the containerPort defined above
   type: ClusterIP
 ---
 apiVersion: networking.k8s.io/v1
@@ -50,4 +50,4 @@ spec:
               service:
                 name: backend-service
                 port:
-                  number: 9091  # Match the port used in the service and deployment
+                  number: 3333  # Match the port used in the service and deployment
