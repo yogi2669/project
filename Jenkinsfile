@@ -67,15 +67,14 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+         stage('Build Docker Image') {
             steps {
-                script {
-                    def timestamp = new Date().format("yyyyMMddHHmmss")
-                    def imageTag = "${DOCKER_IMAGE_NAME}:${timestamp}"
-                    sh """
-                        docker build -t bhargavjupalli/backend-app:20250427135149 -f backend/Dockerfile .
-
-                    """
+                dir("${BACKEND_DIR}") {
+                    script {
+                        sh """
+                            docker build -t ${DOCKER_HUB_USER}/${DOCKER_IMAGE_NAME}:${VERSION} .
+                        """
+                    }
                 }
             }
         }
