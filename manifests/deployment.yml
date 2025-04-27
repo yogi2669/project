@@ -33,7 +33,7 @@ spec:
     - protocol: TCP
       port: 9092       # Updated port to 9091
       targetPort: 3333   # Ensure it matches the containerPort defined above
-  type: ClusterIP
+  type: LoadBalancer 
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
