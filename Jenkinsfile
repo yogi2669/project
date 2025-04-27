@@ -12,6 +12,7 @@ pipeline {
         VERSION = '1.0.0'
         DOCKER_IMAGE_NAME = 'backend-app'
         DOCKER_HUB_USER = 'bhargavjupalli'
+        VERSION = new Date().format("yyyyMMddHHmmss")
     }
 
     stages {
