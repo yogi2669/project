@@ -26,25 +26,27 @@ pipeline {
             }
         }
 
-        stage('Create Maven Settings.xml') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'maven-cred', usernameVariable: 'NEXUS_USERNAME', passwordVariable: 'NEXUS_PASSWORD')]) {
-                    sh """
-                        cat > ~/.m2/settings.xml <<EOF
-<settings>
-  <servers>
-    <server>
-      <id>nexus-releases</id>
-      <username>\${NEXUS_USERNAME}</username>
-      <password>\${NEXUS_PASSWORD}</password>
-    </server>
-  </servers>
-</settings>
-EOF
+       stage('Create Maven Settings.xml') {
+    steps {
+        withCredentials([usernamePassword(credentialsId: 'maven-cred', usernameVariable: 'NEXUS_USERNAME', passwordVariable: 'NEXUS_PASSWORD')]) {
+            script {
+                def settingsXmlContent = """
+                    <settings>
+                      <servers>
+                        <server>
+                          <id>nexus-releases</id>
+                          <username>${env.NEXUS_USERNAME}</username>
+                          <password>${env.NEXUS_PASSWORD}</password>
+                        </server>
+                      </servers>
+                    </settings>
                     """
-                }
+                writeFile file: "${env.HOME}/.m2/settings.xml", text: settingsXmlContent
             }
         }
+    }
+}
+
 
         stage('Publish Artifact to Nexus') {
             steps {
