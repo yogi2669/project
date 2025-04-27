@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: backend-container
-          image: 13.233.88.239:8081/repository/maven-releases/com/yourcompany/yourapp/1.0/yourapp-1.0.jar  # Replace with your Nexus repository path
+          image: bhargavjupalli/backend-app:1.0.0
           ports:
             - containerPort: 9091   # Updated port to 9091
 ---
