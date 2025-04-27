@@ -41,7 +41,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-    - host: <your-ec2-public-ip-or-domain-name>  # Replace with your actual EC2 IP or domain
+    - host: 13.127.197.254  # Replace with your actual EC2 IP or domain
       http:
         paths:
           - path: /
