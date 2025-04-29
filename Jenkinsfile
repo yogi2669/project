@@ -2,18 +2,18 @@ pipeline {
     agent any
 
     environment {
-        NEXUS_URL = 'http://13.127.197.254:8081' 
+        NEXUS_URL = 'http://54.90.88.170:8081' 
         NEXUS_REPO_JAR = 'my-maven-releases'     
         ARTIFACT_PATH = 'target/backend-0.0.1-SNAPSHOT.jar'
-        GITHUB_REPO = 'https://github.com/JaiBhargav/project'
+        GITHUB_REPO = 'https://github.com/yogi2669/project'
         BRANCH = 'master'                       
         DEPLOYMENT_FILE_PATH = 'manifests/deployment.yml' 
         BACKEND_DIR = 'backend'
         DOCKER_IMAGE_NAME = 'backend-app'
-        DOCKER_HUB_USER = 'bhargavjupalli'
+        DOCKER_HUB_USER = 'yogesh2669'
         VERSION= "1.0.0"
         TIMESTAMP = new Date().format("yyyyMMddHHmmss")
-        IMAGE_TAG = "bhargavjupalli/backend-app:${TIMESTAMP}"
+        IMAGE_TAG = "yogesh2669/backend-app:${TIMESTAMP}"
     }
 
     stages {
@@ -122,7 +122,7 @@ pipeline {
                         git config user.email "${GIT_USERNAME}@example.com"
                         git add ${DEPLOYMENT_FILE_PATH}
                         git commit -m "Update deployment image to ${IMAGE_TAG}" || echo "No changes to commit"
-                        git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/JaiBhargav/project.git HEAD:${BRANCH}
+                        git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/yogi2669/project.git HEAD:${BRANCH}
                     """
                 }
             }
